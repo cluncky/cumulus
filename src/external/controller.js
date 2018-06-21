@@ -8,16 +8,21 @@ const Recommend = async (req, res, next)  =>  {
 
     const recommendations = await Recommend(items);
 
-    res.json({data: recommendations});
+    res.json({data: ['apple', 'orange', 'banana']});
 };
 
 const GetRoutes = async (req, res, next)  =>  {
     const fn = `${ns}[GetRoutes]`;
-    const { GetItemDetails } = require('./backend');
+    const { GetItemDetails, GetRoute } = require('./backend');
 
-    const items = req.body.data;
+    const long = req.body.long;
+    const lat = req.body.lat;
+    const items = req.body.items;
+    const distancelimit = req.body.distancelimit;
 
-    const details = await GetItemDetails(items);
+    const details = await GetItemDetails(long, lat, items, distancelimit);
+
+    res.json({data: details});
 }
 
 module.exports = {

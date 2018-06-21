@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-const { Recommend } = require('./controller');
+const { Recommend, GetRoutes } = require('./controller');
 
-router.post('/', Recommend);
+router.post('/recommend', Recommend);
+router.post('/routes', GetRoutes);
 
 module.exports = router;
