@@ -1,13 +1,10 @@
 const ns = '[external][backend]';
 const { request } = require('../utils');
-const googleMapsClient = require('@google/maps').createClient({
-    key: process.env.GOOGLE_MAPS_API_KEY
-});
 
 const Recommend = async (items)   =>   {
     const fn = `${ns}[Recommend]`;
 
-    return [];
+    return ['apple', 'orange', 'banana'];
 };
 
 const GetItemDetails = async(lat, long, items, distancelimit) =>  {
@@ -117,7 +114,9 @@ const GetItemDetails = async(lat, long, items, distancelimit) =>  {
 const GetRoute = async(locations)   =>  {
     const fn = `${ns}[GetRoute]`;
 
-    
+    const googleMapsClient = require('@google/maps').createClient({
+        key: process.env.GOOGLE_MAPS_API_KEY
+    });
 
 
 

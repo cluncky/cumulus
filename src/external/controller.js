@@ -8,7 +8,7 @@ const Recommend = async (req, res, next)  =>  {
 
     const recommendations = await Recommend(items);
 
-    res.json({data: ['apple', 'orange', 'banana']});
+    res.json({data: recommendations});
 };
 
 const GetRoutes = async (req, res, next)  =>  {
