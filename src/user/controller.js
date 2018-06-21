@@ -15,7 +15,7 @@ const GetUser = async (req, res, next)  =>  {
 const GetUsers = async (req, res, next)  =>  {
     const fn = `${ns}[GetUsers]`;
 
-    const users = await UserModel.select();
+    const users = await UserModel.select({});
 
     res.json({data: users});
 };

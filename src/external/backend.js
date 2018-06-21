@@ -49,7 +49,7 @@ const GetItemDetails = async(lat, long, items, distancelimit) =>  {
         state,
         lat,
         long,
-        HAVERSINE(${lat}, ${long}, lat, long) AS distance_in_km,
+        HAVERSINE(${long}, ${lat}, lat, long) AS distance_in_km,
         row_number() over (partition by product_id) AS option
        FROM \`General.Product_Inventory\` inventory
        INNER JOIN \`General.Stores\` stores
@@ -58,7 +58,7 @@ const GetItemDetails = async(lat, long, items, distancelimit) =>  {
        WHERE product_id >=1000000000
        AND product_type IN (${items.map(item => "'" + item + "'")})
        AND distance_in_km < ${distancelimit}
-       LIMIT 10
+       ORDER BY option
        ;`;
 
     const options = {
@@ -108,19 +108,43 @@ const GetItemDetails = async(lat, long, items, distancelimit) =>  {
 
     console.log(fn, 'results:', results);
 
-    return results;
+    return results[0];
 }
 
-const GetRoute = async(locations)   =>  {
+const GetRoute = async(origin, locations)   =>  {
     const fn = `${ns}[GetRoute]`;
+    const _ = require('lodash');
 
     const googleMapsClient = require('@google/maps').createClient({
-        key: process.env.GOOGLE_MAPS_API_KEY
+        key: process.env.GOOGLE_MAPS_API_KEY,
+        Promise: Promise
     });
 
+    console.log(fn, 'begin');
 
+    const result = await googleMapsClient.directions({
+        origin: `${origin.lat},${origin.long}`,
+        destination: `${origin.lat},${origin.long}`,
+        waypoints: `optimize:true|${locations.map(loc => '' + loc.lat + ',' + loc.long + '|')}`.slice(0, -1),
+        mode:'driving',
+        //departure_time: new Date()
+    }).asPromise();
 
-    return route;
+    
+
+    const route = _.get(result, 'json.routes[0]', {legs:[]});
+
+    console.log(fn, 'result:', route);
+
+    let distance = 0;
+    for (let leg of route.legs)   {
+        distance += leg.distance.value;
+    }
+
+    return {
+        overview_polyline: route.overview_polyline,
+        distance
+    };
 };
 
 module.exports = {

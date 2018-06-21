@@ -15,6 +15,7 @@ app.use((req, res, next)  =>{
   res.header('Access-Control-Max-Age', 86400);
   res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
 });
 
 require('./src/routes')(app);
@@ -23,4 +24,8 @@ require('./src/routes')(app);
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);
+});
+
+app.use('*', (req, res, next) =>  {
+  console.error('error');
 });
