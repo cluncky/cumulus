@@ -7,5 +7,5 @@ Google Cloud Sprint Hackathon
 get a recommendation
 
 '''
- curl -X POST -H "Content-Type: application/json"  -d "{\"car\"}" https://cumulus-207900.appspot.com/external/recommend
+ curl -X POST -H "Content-Type: application/json"  -d '{"data": ["apple"]}' https://cumulus-207900.appspot.com/external/recommend
 '''
