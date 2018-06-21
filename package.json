@@ -1,6 +1,9 @@
 {
   "name": "cumulus",
   "version": "1.0.0",
+  "engines": {
+    "node": "8.x"
+  },
   "description": "Google Cloud Sprint Hackathon",
   "main": "server.js",
   "scripts": {
@@ -23,6 +26,7 @@
     "knex": "^0.14.6",
     "knex-postgis": "^0.6.0",
     "node-uuid": "^1.4.8",
-    "pg": "^7.4.3"
+    "pg": "^7.4.3",
+    "request": "^2.87.0"
   }
 }
