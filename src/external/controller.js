@@ -22,6 +22,7 @@ const GetRoutes = async (req, res, next)  =>  {
     const lat = req.body.lat;
     const items = req.body.items;
     const distancelimit = req.body.distancelimit;
+    const timeSavingRatio = req.body.timeSavingRatio;
 
     const details = await GetItemDetails(long, lat, items, distancelimit);
 
@@ -40,10 +41,15 @@ const GetRoutes = async (req, res, next)  =>  {
         routes.push({
             route: route.overview_polyline,
             distance: route.distance,
+            duration: route.duration,
             total,
             items: group
         });
     }
+
+    routes = routes.sort((a, b) => {
+        return ((a.distance * timeSavingRatio) + a.total * (1 - timeSavingRatio)) >= ((b.distance * timeSavingRatio) + b.total * (1 - timeSavingRatio));
+    });
 
     res.json({data: routes});
 }

@@ -130,20 +130,20 @@ const GetRoute = async(origin, locations)   =>  {
         //departure_time: new Date()
     }).asPromise();
 
-    
-
     const route = _.get(result, 'json.routes[0]', {legs:[]});
 
     console.log(fn, 'result:', route);
 
-    let distance = 0;
+    let distance = 0, duration = 0;
     for (let leg of route.legs)   {
         distance += leg.distance.value;
+        duration += leg.duration.value;
     }
 
     return {
         overview_polyline: route.overview_polyline,
-        distance
+        distance,
+        duration
     };
 };
 
