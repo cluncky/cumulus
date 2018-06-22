@@ -4,22 +4,20 @@ const { request } = require('../utils');
 const Recommend = async (items)   =>   {
     const fn = `${ns}[Recommend]`;
 
-    const options = {
-        method: 'POST',
-        url: `https://ml.googleapis.com/v1/projects/${process.env.PROJECT_ID}/models/my-model:predict`,
-        json: true,
-        body: {
-            instances: [
-                {
-                    
-                }
-            ]
-        }
-    };
+    // const options = {
+    //     method: 'POST',
+    //     url: `https://ml.googleapis.com/v1/projects/${process.env.PROJECT_ID}/models/model_rec:predict?key=${process.env.GCP_API_KEY}`,
+    //     json: true,
+    //     body: {
+    //         instances: [0]
+    //     }
+    // };
 
-    const result = await request(options);
+    // const result = await request(options);
 
-    return result.map(pred => pred.label);
+    // return result && result.length && result.filter(pred => items.indexOf(pred) === -1).map(pred => pred.label) || [];
+
+    return ['paper cups', 'paper plates', 'cases of beer', 'fireworks', 'balloons', 'disposable bbq', 'chips', 'Salsa', 'disco lights', 'patio chairs', 'chips', 'streamers'];
 };
 
 const GetItemDetails = async(lat, long, items, distancelimit) =>  {
@@ -63,16 +61,17 @@ const GetItemDetails = async(lat, long, items, distancelimit) =>  {
         state,
         lat,
         long,
-        HAVERSINE(${long}, ${lat}, lat, long) AS distance_in_km,
-        row_number() over (partition by product_id) AS option
-       FROM \`General.Product_Inventory\` inventory
-       INNER JOIN \`General.Stores\` stores
+        HAVERSINE(${lat}, ${long}, lat, long) AS distance_in_km,
+        row_number() over (partition by product_type) AS option
+       FROM \`General.Test_Products\` inventory
+       INNER JOIN \`General.Test_Stores\` stores
        ON inventory.property_id = stores.store_id
        ) temp
-       WHERE product_id >=1000000000
-       AND product_type IN (${items && items.map(item => "'" + item + "'")})
+       WHERE lower(product_type) IN (${items && items.map(item => "'" + item.toLowerCase() + "'")})
        AND distance_in_km < ${distancelimit}
+       AND option = 1
        ORDER BY option
+       --LIMIT 100
        ;`;
 
     const options = {
@@ -156,6 +155,7 @@ const GetRoute = async(origin, locations)   =>  {
 
     return {
         overview_polyline: route.overview_polyline,
+        waypoints: locations,
         distance,
         duration
     };

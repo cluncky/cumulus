@@ -25,6 +25,8 @@ const GetRoutes = async (req, res, next)  =>  {
     const { GetItemDetails, GetRoute } = require('./backend');
     const _ = require('lodash');
 
+    console.log(fn, 'begin');
+
     const long = req.body.long;
     const lat = req.body.lat;
     const items = req.body.items;
@@ -33,7 +35,7 @@ const GetRoutes = async (req, res, next)  =>  {
 
     let routes = [];
     try{
-        const details = await GetItemDetails(long, lat, items, distancelimit);
+        const details = await GetItemDetails(lat, long, items, distancelimit);
 
         const groups = _.groupBy(details, item => item.option);
     

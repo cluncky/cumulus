@@ -1,3 +1,4 @@
+const ns = '[utils]';
 const request = require('request');
 
 const requestHttp = (options)   =>  {
