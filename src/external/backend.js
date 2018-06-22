@@ -4,7 +4,22 @@ const { request } = require('../utils');
 const Recommend = async (items)   =>   {
     const fn = `${ns}[Recommend]`;
 
-    return ['apple', 'orange', 'banana'];
+    const options = {
+        method: 'POST',
+        url: `https://ml.googleapis.com/v1/projects/${process.env.PROJECT_ID}/models/my-model:predict`,
+        json: true,
+        body: {
+            instances: [
+                {
+                    
+                }
+            ]
+        }
+    };
+
+    const result = await request(options);
+
+    return result.map(pred => pred.label);
 };
 
 const GetItemDetails = async(lat, long, items, distancelimit) =>  {
@@ -18,8 +33,7 @@ const GetItemDetails = async(lat, long, items, distancelimit) =>  {
 
     // Creates a client
     const bigquery = new BigQuery({
-        projectId: projectId,
-
+        projectId: projectId
     });
 
     const sqlQuery = `CREATE TEMP FUNCTION RADIANS(x FLOAT64) AS (
@@ -56,7 +70,7 @@ const GetItemDetails = async(lat, long, items, distancelimit) =>  {
        ON inventory.property_id = stores.store_id
        ) temp
        WHERE product_id >=1000000000
-       AND product_type IN (${items.map(item => "'" + item + "'")})
+       AND product_type IN (${items && items.map(item => "'" + item + "'")})
        AND distance_in_km < ${distancelimit}
        ORDER BY option
        ;`;

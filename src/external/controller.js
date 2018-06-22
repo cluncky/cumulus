@@ -8,9 +8,16 @@ const Recommend = async (req, res, next)  =>  {
 
     const items = req.body.data;
 
-    const recommendations = await Recommend(items);
+    try{
+        const recommendations = await Recommend(items);
 
-    res.json({data: recommendations});
+        console.log(fn, 'end', recommendations);
+
+        res.json({data: recommendations});
+    } catch(e)  {
+        console.error(fn, 'error:', e);
+        res.status(400).end();
+    }
 };
 
 const GetRoutes = async (req, res, next)  =>  {
@@ -24,32 +31,38 @@ const GetRoutes = async (req, res, next)  =>  {
     const distancelimit = req.body.distancelimit;
     const timeSavingRatio = req.body.timeSavingRatio;
 
-    const details = await GetItemDetails(long, lat, items, distancelimit);
-
-    const groups = _.groupBy(details, item => item.option);
-
-    console.log(fn, 'groups:', JSON.stringify(groups));
-
     let routes = [];
-    for (let gi of Object.keys(groups))  {
-        const group = groups[gi];
-        let total = 0;
-        for (let item of group) {
-            total += item.price;
-        }
-        const route = await GetRoute({lat, long}, group);
-        routes.push({
-            route: route.overview_polyline,
-            distance: route.distance,
-            duration: route.duration,
-            total,
-            items: group
-        });
-    }
+    try{
+        const details = await GetItemDetails(long, lat, items, distancelimit);
 
-    routes = routes.sort((a, b) => {
-        return ((a.distance * timeSavingRatio) + a.total * (1 - timeSavingRatio)) >= ((b.distance * timeSavingRatio) + b.total * (1 - timeSavingRatio));
-    });
+        const groups = _.groupBy(details, item => item.option);
+    
+        console.log(fn, 'groups:', JSON.stringify(groups));
+    
+        for (let gi of Object.keys(groups))  {
+            const group = groups[gi];
+            let total = 0;
+            for (let item of group) {
+                total += item.price;
+            }
+            const route = await GetRoute({lat, long}, group);
+            routes.push({
+                route: route.overview_polyline,
+                distance: route.distance,
+                duration: route.duration,
+                total,
+                items: group
+            });
+        }
+    
+        routes = routes.sort((a, b) => {
+            return ((a.distance * timeSavingRatio) + a.total * (1 - timeSavingRatio)) >= ((b.distance * timeSavingRatio) + b.total * (1 - timeSavingRatio));
+        });
+    } catch(e)  {
+        console.error(fn, 'error:', e);
+    }
+    
+    
 
     res.json({data: routes});
 }
